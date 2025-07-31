@@ -5,6 +5,7 @@ import mongoose from "mongoose";
  * @param {Object} options - Schema options (e.g., timestamps)
  * @return {mongoose.Schema} Mongoose schema instance
  */
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -50,6 +51,7 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: Boolean,
+      trim: true,
       validate: {
         validator: function (value) {
           return typeof value === "boolean";
@@ -63,5 +65,18 @@ const userSchema = new mongoose.Schema(
   }
 );
 
+
+const authSignupSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    email: { type: String, required: true, lowercase: true, trim: true, unique: true },
+    password: { type: String, trim: true, required: true },
+    phone: { type: String, required: true, trim: true },
+  },
+  { timestamps: true }
+);
+
+const authSignup = mongoose.model("authSignup", authSignupSchema);
 const User = mongoose.model("User", userSchema);
-export default User;
+
+export { User, authSignup };

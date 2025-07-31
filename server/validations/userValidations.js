@@ -21,8 +21,10 @@ export const userValidationSchema = Joi.object({
   email: Joi.string()
     .pattern(/^[a-zA-Z0-9._%+-]{3,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
     .max(250)
+    .lowercase()
     .required()
     .messages({
+      "string.pattern.base": "Please enter a valid email address.",
       "string.max": "Email cannot exceed 250 characters",
       "string.empty": "Email is required",
     }),
@@ -67,7 +69,6 @@ export const userValidationSchema = Joi.object({
   }),
 
   image: Joi.string().uri().optional(),
-
 });
 
 /**
@@ -78,4 +79,107 @@ export const userStatusValidationSchema = Joi.object({
     "boolean.base": "Status must be a boolean value (true or false)",
     "any.required": "Status is required",
   }),
+});
+
+/**
+ * @return {Joi.ObjectSchema} Joi schema for validating user signup
+ */
+export const authSignupSchema = Joi.object({
+  name: Joi.string()
+    .pattern(
+      /^(?!.*[ '\-]{2,})(?!^[ '\-])(?!.*[ '\-]$)[A-Za-z]+(?:[ '\-][A-Za-z]+)*$/
+    )
+    .min(2)
+    .max(50)
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Name must contain only letters, single spaces, hyphens, or apostrophes. It must not start or end with a space or hyphen.",
+      "string.empty": "Name is required",
+      "string.min": "Name must be at least 2 characters",
+      "string.max": "Name cannot exceed 50 characters",
+    }),
+  email: Joi.string()
+    .pattern(/^[a-zA-Z0-9._%+-]{3,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .max(250)
+    .lowercase()
+    .required()
+    .messages({
+      "string.pattern.base": "Please enter a valid email address.",
+      "string.max": "Email cannot exceed 250 characters.",
+      "string.empty": "Email is required.",
+    }),
+  phone: Joi.string()
+    .pattern(/^\d{10}$/)
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Phone number must be exactly 10 digits and should have only numbers.",
+      "string.empty": "Phone number is required",
+    }),
+  password: Joi.string()
+    .trim()
+    .min(8)
+    .max(30)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,}$/)
+    .custom((value, helpers) => {
+      if (/\s{2,}/.test(value)) {
+        return helpers.message(
+          "Password cannot contain multiple consecutive spaces."
+        );
+      }
+      if (/^\s|\s$/.test(value)) {
+        return helpers.message("Password cannot start or end with spaces.");
+      }
+      return value;
+    })
+    .required()
+    .messages({
+      "string.empty": "Password is required.",
+      "string.min": "Password must be at least 8 characters.",
+      "string.max": "Password cannot exceed 30 characters.",
+      "string.pattern.name":
+        "Password must include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.",
+    }),
+});
+
+/**
+ * @return {Joi.ObjectSchema} Joi schema for validating user login
+ */
+export const authLoginSchema = Joi.object({
+  email: Joi.string()
+    .pattern(/^[a-zA-Z0-9._%+-]{3,}@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
+    .max(250)
+    .lowercase()
+    .required()
+    .messages({
+      "string.pattern.base": "Please enter a valid email address.",
+      "string.max": "Email cannot exceed 250 characters.",
+      "string.empty": "Email is required.",
+    }),
+
+  password: Joi.string()
+    .trim()
+    .min(8)
+    .max(30)
+    .pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d\s]).{8,}$/)
+    .custom((value, helpers) => {
+      if (/\s{2,}/.test(value)) {
+        return helpers.message(
+          "Password cannot contain multiple consecutive spaces."
+        );
+      }
+      if (/^\s|\s$/.test(value)) {
+        return helpers.message("Password cannot start or end with spaces.");
+      }
+      return value;
+    })
+    .required()
+    .messages({
+      "string.empty": "Password is required.",
+      "string.min": "Password must be at least 8 characters.",
+      "string.max": "Password cannot exceed 30 characters.",
+      "string.pattern.name":
+        "Password must include at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special character.",
+    }),
 });
