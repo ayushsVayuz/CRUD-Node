@@ -77,7 +77,7 @@ web_modules/
 .yarn-integrity
 
 #keys
-**/keys/
+server/keys/
 
 # dotenv environment variable files
 .env
